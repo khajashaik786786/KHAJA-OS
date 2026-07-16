@@ -1,40 +1,101 @@
 function kh {
 
     param(
-        [string]$Command
-    )
+
+    [string]$Command,
+
+    [string]$Option,
+
+    [string]$Argument
+
+)
 
     switch ($Command.ToLower()) {
 
-        "weather" { Show-Weather }
+        "dashboard" { Show-Dashboard }
 
-        "news" { Show-News }
+        "weather" { Show-WeatherCenter }
 
-        "jobs" { Show-Jobs }
+        "network" { Show-NetworkCenter }
+        "cricket" {
 
-        "network" { Show-Network }
+    switch ($Option.ToLower()) {
 
-        "monitor" { Show-Monitor }
+        "live" { Show-LiveMatches }
 
-        "eda" { Show-EDA }
+        "today" { Show-TodayMatches }
 
-        "ai" { Show-AI }
+        "series" { Show-Series }
+
+        "rankings" { Show-Rankings }
+
+        "points" { Show-Points }
+
+        "news" { Show-CricketNews }
+
+        "score" { Show-Scorecard }
+
+        "venues" { Show-Venues }
+
+        "player" { Search-Player $Argument }
+
+        default { Show-Cricket }
+
+    }
+
+}
+
+        "news" { Show-NewsCenter }
+"telugu" {
+
+    switch ($Option.ToLower()) {
+
+        "ap"      { Show-APNews }
+        "ts"      { Show-TSNews }
+        "jobs"    { Show-TeluguJobs }
+        "tech"    { Show-TechNews }
+        "cinema"  { Show-CinemaNews }
+        "sports"  { Show-SportsNews }
+
+        default   { Show-TeluguNews }
+    }
+}
+
+        "update" { Update-Khaja }
+
+        "theme" { Show-TestTheme }
+        "top" { Show-Top }
+
+        "about" { Show-About }
+
+        "doctor" { Show-Doctor }
+
+        "system" { Show-System }
+
+        "clock" { Show-Clock }
+        "security" { Show-Security }
 
         default {
 
             Write-Host ""
-            Write-Host "========================="
-            Write-Host "     KHAJA OS v5"
-            Write-Host "========================="
+            Write-Host "========== KHAJA OS ==========" -ForegroundColor Cyan
             Write-Host ""
-            Write-Host "Available Commands:"
+            
+            Write-Host "kh top"
+            Write-Host "kh about"
+            Write-Host "kh dashboard"
             Write-Host "kh weather"
-            Write-Host "kh news"
-            Write-Host "kh jobs"
             Write-Host "kh network"
-            Write-Host "kh monitor"
-            Write-Host "kh eda"
-            Write-Host "kh ai"
+            Write-Host "kh news"
+            Write-Host "kh telugu"
+            Write-Host "kh update"
+            Write-Host "kh theme"
+            Write-Host "kh doctor"
+            Write-Host "kh system"
+            Write-Host "kh clock"
+            Write-Host "kh security"
+            Write-Host "kh cricket"
+
             Write-Host ""
         }
     }

@@ -1,0 +1,1 @@
+$Global:CricketApiKey="2f08a5a3-d308-4f0c-9a04-d99ccf2317df"
