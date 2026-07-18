@@ -1,47 +1,52 @@
 function Watch-Scorecard {
 
-    param(
-        [Parameter(Mandatory)]
-        [int]$MatchId,
+param(
+[int]$MatchId,
+[int]$Refresh = 5
+)
 
-        [int]$Refresh = 10
-    )
 
-    $esc = [char]27
+$esc=[char]27
 
-    try {
 
-        # Hide cursor
-        Write-Host "$esc[?25l" -NoNewline
+Write-Host "$esc[?25l" -NoNewline
 
-        while ($true) {
 
-            # Move to top-left instead of clearing screen
-            $Host.UI.RawUI.CursorPosition =
-                New-Object System.Management.Automation.Host.Coordinates(0,0)
+try {
 
-            Show-CricbuzzScorecard `
-                -MatchId $MatchId `
-                -NoClear
 
-            Write-Host ""
-            Write-Host ("Refreshing every {0} seconds...  Press Ctrl+C to stop" -f $Refresh) `
-                -ForegroundColor DarkGray
+while($true){
 
-           for($i = $Refresh; $i -ge 1; $i--) {
 
-    Write-Host -NoNewline "`rRefreshing in $i sec... Press Ctrl+C to stop "
+$pos = New-Object System.Management.Automation.Host.Coordinates(0,0)
 
-    Start-Sleep 1
-}
+$Host.UI.RawUI.CursorPosition=$pos
+
+
+Show-CricbuzzScorecard $MatchId -NoClear
+
 
 Write-Host ""
-        }
 
-    }
-    finally {
+Write-Host "Refreshing in $Refresh sec... Press Ctrl+C to stop" `
+-ForegroundColor DarkGray
 
-        # Restore cursor
-        Write-Host "$esc[?25h" -NoNewline
-    }
+
+Start-Sleep $Refresh
+
+
+}
+
+
+}
+
+finally{
+
+
+Write-Host "$esc[?25h" -NoNewline
+
+
+}
+
+
 }
