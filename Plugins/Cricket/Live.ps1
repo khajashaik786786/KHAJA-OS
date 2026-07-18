@@ -2,131 +2,75 @@ function Show-LiveMatches {
 
     Clear-Host
 
-    Show-KhHeader "LIVE CRICKET"
+    Show-CricketTitle "🔴 LIVE MATCHES"
 
-    Start-KhAnimation @(
-        "Connecting to CricAPI",
-        "Fetching Live Matches",
-        "Preparing Live Dashboard"
-    )
+    Write-Host ""
+    Write-Host "[ OK ] Reading Match Cache..." -ForegroundColor Green
+    if($Global:AllMatches.Count -eq 0){
 
-    $url = "https://api.cricapi.com/v1/currentMatches?apikey=$Global:CricketApiKey&offset=0"
+    Update-MatchCache
 
-    $json = Get-CricketJson $url
+}
+else{
 
-    if($null -eq $json){
+    Refresh-MatchCache
 
-        Show-Fail "Unable to connect to CricAPI."
+}
+    Write-Host ""
+
+    $live = Get-LiveMatches
+
+    if($live.Count -eq 0){
+
+        Write-Host "No Live Matches." -ForegroundColor Yellow
+        Wait-Key
         return
 
     }
 
-    if($json.status -ne "success"){
+    $i = 1
 
-        Show-Fail $json.message
+    foreach($match in $live){
+
+        Write-Host "[$i] $($match.name)" -ForegroundColor Cyan
+
+        Write-Host "     📍 $($match.venue)"
+        Write-Host "     📢 $($match.status)"
+
+        Write-Host ""
+
+        foreach($score in $match.score){
+
+            $team = $score.inning
+
+            $team = $team -replace " Inning 1",""
+            $team = $team -replace " Inning 2",""
+
+            "{0,-28} {1}/{2} ({3})" -f $team,$score.r,$score.w,$score.o
+
+        }
+
+        Write-Host ""
+        Write-Host "────────────────────────────────────────────────────────────"
+
+        $i++
+
+    }
+
+    Write-Host ""
+
+    $choice = Read-Host "Select Match Number (0 Exit)"
+
+    if($choice -eq 0){
+
         return
 
     }
 
-    $liveMatches = $json.data | Where-Object{
+    if(($choice -ge 1) -and ($choice -le $live.Count)){
 
-        $_.status -match "Live|Day|Session|Need|need|Requires|requires|Tea|Lunch|Stumps|Break"
-
-    }
-
-    if(!$liveMatches){
-
-        Show-Warn "No Live Matches Found"
-        Write-Host ""
-        Write-Host "Showing Recent Matches..." -ForegroundColor DarkYellow
-        Write-Host ""
-
-        $liveMatches = $json.data | Select-Object -First 5
+        Show-MatchCard $live[$choice-1]
 
     }
-
-    foreach($match in $liveMatches){
-
-        Write-Host ""
-        Write-Host "╔══════════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-        Write-Host "║                           🏏 LIVE MATCH                            ║" -ForegroundColor Cyan
-        Write-Host "╚══════════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
-
-        Write-Host ""
-
-        Write-Host $match.name -ForegroundColor Yellow
-
-        Write-Host ""
-
-        $format=$match.matchType
-
-        if([string]::IsNullOrWhiteSpace($format)){
-
-            if($match.name -match "Test"){
-                $format="Test"
-            }
-            elseif($match.name -match "ODI"){
-                $format="ODI"
-            }
-            elseif($match.name -match "T20"){
-                $format="T20"
-            }
-            elseif($match.name -match "IPL"){
-                $format="IPL"
-            }
-            else{
-                $format="Unknown"
-            }
-
-        }
-
-        Write-Host "🏆 Format :" -NoNewline
-        Write-Host " $format" -ForegroundColor Green
-
-        Write-Host "📍 Venue  :" -NoNewline
-        Write-Host " $($match.venue)" -ForegroundColor White
-
-        Write-Host "📢 Status :" -NoNewline
-        Write-Host " $($match.status)" -ForegroundColor Magenta
-
-        Write-Host ""
-        Write-Host "══════════════ SCORECARD ══════════════" -ForegroundColor Cyan
-
-        if($match.score){
-
-            foreach($inning in $match.score){
-
-                $team=$inning.inning
-
-                $team=$team -replace ","," vs "
-                $team=$team -replace "Inning 1",""
-                $team=$team -replace "Inning 2",""
-                $team=$team -replace "Innings",""
-                $team=$team.Trim()
-
-                Write-Host ""
-
-                Write-Host "🏏 $team" -ForegroundColor Yellow
-
-                Write-Host ("Runs  : {0}/{1}" -f $inning.r,$inning.w) -ForegroundColor Green
-
-                Write-Host ("Overs : {0}" -f $inning.o) -ForegroundColor Cyan
-
-            }
-
-        }
-        else{
-
-            Show-Warn "Score not available."
-
-        }
-
-        Write-Host ""
-        Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
-        Write-Host ""
-
-    }
-
-    Show-KhFooter
 
 }
