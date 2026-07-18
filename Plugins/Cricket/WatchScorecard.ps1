@@ -7,13 +7,41 @@ function Watch-Scorecard {
         [int]$Refresh = 10
     )
 
-    while($true){
+    $esc = [char]27
 
-        Show-CricbuzzScorecard $MatchId
+    try {
 
-        Write-Host ""
-        Write-Host "Refreshing in $Refresh seconds... (Ctrl+C to stop)" -ForegroundColor Yellow
+        # Hide cursor
+        Write-Host "$esc[?25l" -NoNewline
 
-        Start-Sleep $Refresh
+        while ($true) {
+
+            # Move to top-left instead of clearing screen
+            $Host.UI.RawUI.CursorPosition =
+                New-Object System.Management.Automation.Host.Coordinates(0,0)
+
+            Show-CricbuzzScorecard `
+                -MatchId $MatchId `
+                -NoClear
+
+            Write-Host ""
+            Write-Host ("Refreshing every {0} seconds...  Press Ctrl+C to stop" -f $Refresh) `
+                -ForegroundColor DarkGray
+
+           for($i = $Refresh; $i -ge 1; $i--) {
+
+    Write-Host -NoNewline "`rRefreshing in $i sec... Press Ctrl+C to stop "
+
+    Start-Sleep 1
+}
+
+Write-Host ""
+        }
+
+    }
+    finally {
+
+        # Restore cursor
+        Write-Host "$esc[?25h" -NoNewline
     }
 }

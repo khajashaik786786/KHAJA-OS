@@ -2,7 +2,9 @@ function Show-CricbuzzScorecard {
 
     param(
         [Parameter(Mandatory)]
-        [int]$MatchId
+        [int]$MatchId,
+
+        [switch]$NoClear
     )
 
     $headers = @{
@@ -22,7 +24,9 @@ function Show-CricbuzzScorecard {
         return
     }
 
-    Clear-Host
+    if (-not $NoClear) {
+        Clear-Host
+    }
 
     Show-CricketTitle "FULL SCORECARD"
 
@@ -77,6 +81,7 @@ function Show-CricbuzzScorecard {
         Write-Host "Fall Of Wickets" -ForegroundColor Yellow
 
         $count = 1
+
         foreach($w in $innings.fow.fow){
 
             Write-Host ("{0} - {1}/{2} ({3})" -f `
@@ -123,6 +128,7 @@ function Show-Scorecard {
     $choice = Read-Host "Select Match Number"
 
     if(($choice -as [int]) -lt 1 -or ($choice -as [int]) -gt $matches.Count){
+
         Show-Error "Invalid selection."
         return
     }
