@@ -39,3 +39,14 @@ function Show-Line {
     Write-Host "══════════════════════════════════════════════════════" -ForegroundColor DarkGray
 
 }
+function Show-Error {
+
+param(
+[string]$Message
+)
+
+Write-Host ""
+Write-Host $Message -ForegroundColor Red
+Write-Host ""
+
+}

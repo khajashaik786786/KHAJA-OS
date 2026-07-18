@@ -1,15 +1,15 @@
-# ===============================
-# KHAJA OS v5 Loader
-# ===============================
+# =====================================
+# KHAJA OS v5 MAIN LOADER
+# =====================================
 
 
 $Root = Split-Path $PSScriptRoot -Parent
 
 
 
-# ===============================
-# CORE
-# ===============================
+# =====================================
+# LOAD CORE
+# =====================================
 
 Write-Host ""
 Write-Host "Loading Core..." -ForegroundColor Cyan
@@ -20,7 +20,8 @@ Where-Object {
 
     $_.Name -notin @(
         "Loader.ps1",
-        "PluginLoader.ps1"
+        "PluginLoader.ps1",
+        "kh.ps1"
     )
 
 } |
@@ -35,44 +36,60 @@ ForEach-Object {
 
 
 
-# ===============================
-# PLUGINS
-# ===============================
+# =====================================
+# LOAD PLUGIN SYSTEM
+# =====================================
+
 
 Write-Host ""
+Write-Host "Loading Plugin System..." -ForegroundColor Cyan
+
 
 . "$Root\Core\PluginLoader.ps1"
+
+
+
+# =====================================
+# LOAD PLUGINS
+# =====================================
 
 
 Import-KhPlugins
 
 
 
-# ===============================
-# MODULES
-# ===============================
+# =====================================
+# LOAD MODULES
+# =====================================
+
 
 Write-Host ""
 Write-Host "Loading Modules..." -ForegroundColor Cyan
 
 
 
-Get-ChildItem "$Root\Modules\*.ps1" |
-Sort-Object Name |
-ForEach-Object {
+if(Test-Path "$Root\Modules"){
 
-    Write-Host "Loading $($_.Name)"
 
-    . $_.FullName
+    Get-ChildItem "$Root\Modules\*.ps1" |
+    Sort-Object Name |
+    ForEach-Object {
+
+
+        Write-Host "Loading $($_.Name)"
+
+        . $_.FullName
+
+
+    }
 
 }
 
 
 
-
-# ===============================
-# COMMAND DISPATCHER
-# ===============================
+# =====================================
+# LOAD COMMAND DISPATCHER LAST
+# =====================================
 
 
 Write-Host ""
@@ -81,6 +98,11 @@ Write-Host "Loading Command Dispatcher..." -ForegroundColor Cyan
 
 . "$Root\Core\kh.ps1"
 
+
+
+# =====================================
+# COMPLETE
+# =====================================
 
 
 Write-Host ""
